@@ -8,11 +8,11 @@ export interface IRefPhaserGame {
 }
 
 interface IProps {
-    currentActiveScene?: (scene_instance: Phaser.Scene) => void;
+    onCurrentSceneReady?: (scene_instance: Phaser.Scene) => void;
 }
 
 export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(
-    function PhaserGame({ currentActiveScene }, ref) {
+    function PhaserGame({ onCurrentSceneReady }, ref) {
         const game = useRef<Phaser.Game | null>(null!);
 
         useLayoutEffect(() => {
@@ -40,12 +40,7 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(
             EventBus.on(
                 "current-scene-ready",
                 (scene_instance: Phaser.Scene) => {
-                    if (
-                        currentActiveScene &&
-                        typeof currentActiveScene === "function"
-                    ) {
-                        currentActiveScene(scene_instance);
-                    }
+                    onCurrentSceneReady?.(scene_instance);
 
                     if (typeof ref === "function") {
                         ref({ game: game.current, scene: scene_instance });
@@ -55,13 +50,13 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(
                             scene: scene_instance,
                         };
                     }
-                },
+                }
             );
             return () => {
                 EventBus.removeListener("current-scene-ready");
             };
-        }, [currentActiveScene, ref]);
+        }, [onCurrentSceneReady, ref]);
 
         return <div id="game-container"></div>;
-    },
+    }
 );
