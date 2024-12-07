@@ -1,16 +1,7 @@
 {
-    "name": "template-react-ts",
+    "name": "synthetic-winter-tree",
     "description": "A Phaser 3 TypeScript project template that demonstrates React communication and uses Vite for bundling.",
     "version": "1.0.3",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/phaserjs/template-react-ts.git"
-    },
-    "author": "Phaser Studio <support@phaser.io> (https://phaser.io/)",
-    "bugs": {
-        "url": "https://github.com/phaserjs/template-react-ts/issues"
-    },
-    "homepage": "https://github.com/phaserjs/template-react-ts#readme",
     "keywords": [
         "phaser",
         "phaser3",
@@ -22,7 +13,8 @@
         "dev": "node log.js dev & vite --config vite/config.dev.mjs",
         "build": "node log.js build & vite build --config vite/config.prod.mjs",
         "dev-nolog": "vite --config vite/config.dev.mjs",
-        "build-nolog": "vite build --config vite/config.prod.mjs"
+        "build-nolog": "vite build --config vite/config.prod.mjs",
+        "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
     },
     "dependencies": {
         "phaser": "^3.87.0",
