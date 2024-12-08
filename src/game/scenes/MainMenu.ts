@@ -1,4 +1,4 @@
-import { GameObjects, Scene } from "phaser";
+import { GameObjects, Physics, Scene } from "phaser";
 
 import { EventBus } from "../EventBus";
 import { GAME_H, GAME_W } from "../constants";
@@ -9,7 +9,9 @@ export class MainMenu extends Scene {
     background: GameObjects.Image;
     scoreText: GameObjects.Text;
     balls: GameObjects.Group;
+    currentBall: Physics.Matter.Image | null = null;
 
+    ballCount = 0;
     score: number = 0;
 
     constructor() {
@@ -33,24 +35,51 @@ export class MainMenu extends Scene {
             .setDepth(100);
 
         this.balls = this.add.group({ classType: GameObjects.Image });
+        // 1 ~ 5
+        this.createNewBall();
         // this.matter.world.on("collisionstart", this.handleCollision, this);
-        this.createNewBall(5);
-        setTimeout(() => {
-            this.createNewBall(1).setX(GAME_W / 2 - 100);
-        }, 1000);
 
         EventBus.emit("current-scene-ready", this);
     }
 
-    createNewBall(type: BallType) {
-        const ball = this.matter.add.image(GAME_W / 2, 150, `ball-${type}`);
+    update(time: number, delta: number): void {
+        const pointer = this.input.activePointer;
+        if (pointer.isDown && this.currentBall) {
+            this.currentBall.setStatic(false);
+            // this.currentBall.setVelocity(
+            //     pointer.velocity.x,
+            //     pointer.velocity.y
+            // );
+            this.currentBall = null;
+            this.time.delayedCall(
+                1000,
+                () => {
+                    this.createNewBall();
+                },
+                [],
+                this
+            );
+        }
+    }
+
+    createNewBall() {
+        // 当小球堆到最顶上的时候会导致跟新创建的小球发生重叠挤压碰撞，但不用担心，以后有了安全线就不会有这个问题了
+        // 在那之前就游戏结束了！
+        const type =
+            this.ballCount === 0
+                ? 1
+                : ((Math.floor(Math.random() * 5) + 1) as BallType);
+
+        const ball = this.matter.add.image(GAME_W / 2, 175, `ball-${type}`);
         ball.setCircle(ball.width / 2, {
             restitution: 0.2,
             friction: 0.1,
             frictionAir: 0.01,
         });
-        // ball.setStatic(true);
+        ball.setStatic(true);
+        this.currentBall = ball;
         this.balls.add(ball);
+        this.ballCount++;
         return ball;
     }
 
