@@ -35,8 +35,9 @@ export class Preloader extends Scene {
         //  Load the assets for the game - Replace with your own assets
         this.load.setPath("assets");
 
-        // TODO 先就一个吧，后面再加
-        this.load.image("ball-1", "ball-1.png");
+        for (let i = 1; i <= 11; i++) {
+            this.load.image(`ball-${i}`, `ball-${i}.png`);
+        }
     }
 
     create() {

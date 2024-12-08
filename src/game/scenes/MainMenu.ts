@@ -30,6 +30,7 @@ export class MainMenu extends Scene {
             })
             .setDepth(100);
 
+        // TODO 小球在该转动时没有角速度，换matter.js试试
         this.balls = this.add.group({ classType: GameObjects.Image });
         this.physics.add.collider(this.balls, this.balls);
         this.createNewBall(1);
@@ -41,8 +42,9 @@ export class MainMenu extends Scene {
         const ball = this.physics.add
             .image(GAME_W / 2, 150, `ball-${type}`)
             .setBounce(0.2)
-            .setFriction(0.2)
+            .setFriction(0.1)
             .setCollideWorldBounds(true);
+        ball.setCircle(ball.width / 2);
         ball.body.moves = false;
         this.balls.add(ball);
         return ball;
