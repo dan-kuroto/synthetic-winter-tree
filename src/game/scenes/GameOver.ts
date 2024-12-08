@@ -1,3 +1,4 @@
+import { GAME_H, GAME_W } from "../constants";
 import { EventBus } from "../EventBus";
 import { Scene } from "phaser";
 
@@ -14,7 +15,7 @@ export class GameOver extends Scene {
         this.camera = this.cameras.main;
         this.camera.setBackgroundColor(0xff0000);
 
-        this.background = this.add.image(512, 384, "background");
+        this.background = this.add.image(GAME_W / 2, GAME_H / 2, "background");
         this.background.setAlpha(0.5);
 
         this.gameOverText = this.add

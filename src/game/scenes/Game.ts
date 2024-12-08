@@ -1,3 +1,4 @@
+import { GAME_H, GAME_W } from "../constants";
 import { EventBus } from "../EventBus";
 import { Scene } from "phaser";
 
@@ -14,7 +15,7 @@ export class Game extends Scene {
         this.camera = this.cameras.main;
         this.camera.setBackgroundColor(0x00ff00);
 
-        this.background = this.add.image(512, 384, "background");
+        this.background = this.add.image(GAME_W / 2, GAME_H / 2, "background");
         this.background.setAlpha(0.5);
 
         this.gameText = this.add
@@ -29,7 +30,7 @@ export class Game extends Scene {
                     stroke: "#000000",
                     strokeThickness: 8,
                     align: "center",
-                },
+                }
             )
             .setOrigin(0.5)
             .setDepth(100);
