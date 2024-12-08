@@ -17,6 +17,8 @@ export class MainMenu extends Scene {
     }
 
     create() {
+        this.matter.world.setBounds(0, 0, GAME_W, GAME_H);
+
         this.background = this.add.image(GAME_W / 2, GAME_H / 2, "background");
 
         this.scoreText = this.add
@@ -30,22 +32,24 @@ export class MainMenu extends Scene {
             })
             .setDepth(100);
 
-        // TODO 小球在该转动时没有角速度，换matter.js试试
         this.balls = this.add.group({ classType: GameObjects.Image });
-        this.physics.add.collider(this.balls, this.balls);
-        this.createNewBall(1);
+        // this.matter.world.on("collisionstart", this.handleCollision, this);
+        this.createNewBall(5);
+        setTimeout(() => {
+            this.createNewBall(1).setX(GAME_W / 2 - 100);
+        }, 1000);
 
         EventBus.emit("current-scene-ready", this);
     }
 
     createNewBall(type: BallType) {
-        const ball = this.physics.add
-            .image(GAME_W / 2, 150, `ball-${type}`)
-            .setBounce(0.2)
-            .setFriction(0.1)
-            .setCollideWorldBounds(true);
-        ball.setCircle(ball.width / 2);
-        ball.body.moves = false;
+        const ball = this.matter.add.image(GAME_W / 2, 150, `ball-${type}`);
+        ball.setCircle(ball.width / 2, {
+            restitution: 0.2,
+            friction: 0.1,
+            frictionAir: 0.01,
+        });
+        // ball.setStatic(true);
         this.balls.add(ball);
         return ball;
     }
