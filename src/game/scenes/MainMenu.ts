@@ -47,7 +47,10 @@ export class MainMenu extends Scene {
         const pointer = this.input.activePointer;
         if (pointer.isDown && this.currentBall) {
             this.isDragging = true;
-            this.currentBall.setX(pointer.x);
+            let x = pointer.x;
+            x = Math.min(x, GAME_W - this.currentBall.width / 2);
+            x = Math.max(x, this.currentBall.width / 2);
+            this.currentBall.setX(x);
         }
         if (!pointer.isDown && this.isDragging && this.currentBall) {
             this.isDragging = false;
