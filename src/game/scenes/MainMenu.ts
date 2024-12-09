@@ -37,6 +37,7 @@ export class MainMenu extends Scene {
         this.balls = this.add.group({ classType: GameObjects.Image });
         this.createNewBall({});
         this.matter.world.on("collisionstart", this.handleCollision, this);
+        this.matter.world.on("collisionactive", this.handleOverlap, this);
 
         EventBus.emit("current-scene-ready", this);
     }
@@ -58,6 +59,7 @@ export class MainMenu extends Scene {
                 1000,
                 () => {
                     // BUG 似乎在连续小球合成的时点击放下小球并创建不会立刻生效？最终会导致同时存在多个待命小球
+                    //     也可能我观察错误，但原理不确定，问题的确存在！
                     this.createNewBall({});
                 },
                 [],
@@ -66,12 +68,24 @@ export class MainMenu extends Scene {
         }
     }
 
-    // BUG 这里不能用碰撞，要用重叠，否则有时候碰到了不会合并！
     handleCollision(event, bodyA, bodyB) {
         const labelA = bodyA.label as string;
         const labelB = bodyB.label as string;
         if (labelA.startsWith("ball-") && labelB.startsWith("ball-")) {
             this.handleFusion(bodyA, bodyB);
+        }
+    }
+
+    handleOverlap(event) {
+        const pairs = event.pairs;
+        for (const pair of pairs) {
+            const bodyA = pair.bodyA;
+            const bodyB = pair.bodyB;
+            const labelA = bodyA.label as string;
+            const labelB = bodyB.label as string;
+            if (labelA.startsWith("ball-") && labelB.startsWith("ball-")) {
+                this.handleFusion(bodyA, bodyB);
+            }
         }
     }
 
