@@ -38,6 +38,10 @@ export class Preloader extends Scene {
         for (let i = 1; i <= 11; i++) {
             this.load.image(`ball-${i}`, `ball-${i}.png`);
         }
+        this.load.audio("biu", "biu.mp3");
+        this.load.audio("critical", "critical.mp3");
+        this.load.audio("game-over", "game-over.mp3");
+        this.load.audio("game-clear", "game-clear.mp3");
     }
 
     create() {
