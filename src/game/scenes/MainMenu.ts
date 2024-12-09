@@ -35,7 +35,7 @@ export class MainMenu extends Scene {
             .setDepth(100);
 
         this.balls = this.add.group({ classType: GameObjects.Image });
-        this.createNewBall({});
+        this.currentBall = this.createNewBall({});
         this.matter.world.on("collisionstart", this.handleCollision, this);
         this.matter.world.on("collisionactive", this.handleOverlap, this);
 
@@ -58,9 +58,7 @@ export class MainMenu extends Scene {
             this.time.delayedCall(
                 1000,
                 () => {
-                    // BUG 似乎在连续小球合成的时点击放下小球并创建不会立刻生效？最终会导致同时存在多个待命小球
-                    //     也可能我观察错误，但原理不确定，问题的确存在！
-                    this.createNewBall({});
+                    this.currentBall = this.createNewBall({});
                 },
                 [],
                 this
@@ -133,7 +131,6 @@ export class MainMenu extends Scene {
         });
         ball.setStatic(isStatic);
 
-        this.currentBall = ball;
         this.balls.add(ball);
         return ball;
     }
