@@ -12,7 +12,8 @@ export class MainMenu extends Scene {
     currentBall: Physics.Matter.Image | null = null;
 
     ballCount = 0;
-    score: number = 0;
+    isDragging = false;
+    score = 0;
 
     constructor() {
         super("MainMenu");
@@ -45,11 +46,12 @@ export class MainMenu extends Scene {
     update(time: number, delta: number): void {
         const pointer = this.input.activePointer;
         if (pointer.isDown && this.currentBall) {
+            this.isDragging = true;
+            this.currentBall.setX(pointer.x);
+        }
+        if (!pointer.isDown && this.isDragging && this.currentBall) {
+            this.isDragging = false;
             this.currentBall.setStatic(false);
-            // this.currentBall.setVelocity(
-            //     pointer.velocity.x,
-            //     pointer.velocity.y
-            // );
             this.currentBall = null;
             this.time.delayedCall(
                 1000,
