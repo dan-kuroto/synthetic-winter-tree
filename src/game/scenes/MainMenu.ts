@@ -3,7 +3,7 @@ import { GameObjects, Physics, Scene } from "phaser";
 import { EventBus } from "../EventBus";
 import { GAME_H, GAME_W } from "../constants";
 
-type BallType = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
+type BallLevel = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
 
 export class MainMenu extends Scene {
     background: GameObjects.Image;
@@ -67,18 +67,20 @@ export class MainMenu extends Scene {
     createNewBall() {
         // 当小球堆到最顶上的时候会导致跟新创建的小球发生重叠挤压碰撞，但不用担心，以后有了安全线就不会有这个问题了
         // 在那之前就游戏结束了！
-        const type =
+        const level =
             this.ballCount === 0
                 ? 1
-                : ((Math.floor(Math.random() * 5) + 1) as BallType);
+                : ((Math.floor(Math.random() * 5) + 1) as BallLevel);
 
-        const ball = this.matter.add.image(GAME_W / 2, 175, `ball-${type}`);
+        const ball = this.matter.add.image(GAME_W / 2, 175, `ball-${level}`);
         ball.setCircle(ball.width / 2, {
             restitution: 0.2,
             friction: 0.1,
             frictionAir: 0.01,
+            mass: level * 0.5,
         });
         ball.setStatic(true);
+
         this.currentBall = ball;
         this.balls.add(ball);
         this.ballCount++;
