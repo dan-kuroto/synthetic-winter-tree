@@ -41,7 +41,7 @@ export class MainMenu extends Scene {
             .setDepth(100);
 
         this.balls = this.add.group({ classType: GameObjects.Image });
-        this.currentBall = this.createNewBall({});
+        this.currentBall = this.createFusionBall({});
         this.matter.world.on("collisionstart", this.handleCollision, this);
         this.matter.world.on("collisionactive", this.handleOverlap, this);
 
@@ -64,7 +64,7 @@ export class MainMenu extends Scene {
             this.time.delayedCall(
                 1000,
                 () => {
-                    this.currentBall = this.createNewBall({});
+                    this.currentBall = this.createFusionBall({});
                 },
                 [],
                 this
@@ -114,26 +114,21 @@ export class MainMenu extends Scene {
         const x = (ballA.x + ballB.x) / 2;
         const y = (ballA.y + ballB.y) / 2;
 
-        // 计算新小球的速度
-        const velocityA = ballA.getVelocity();
-        const velocityB = ballB.getVelocity();
-        const massA = ballA.body?.mass || 0;
-        const massB = ballB.body?.mass || 0;
-
+        // 融合逻辑
+        const [volumeX, volumeY] = this.calcNewBallVolume(ballA, ballB);
+        // BUG 如果挂起小球就是碰撞二者之一，然后在这里被销毁，鼠标拖动事件的时候就改不了坐标了！空指针！
         ballA.destroy();
         ballB.destroy();
-        const newBall = this.createNewBall({
+        const newBall = this.createFusionBall({
             level: newLevel,
             x,
             y,
             isStatic: false,
         });
-        newBall.setVelocity(
-            (velocityA.x * massA + velocityB.x * massB) / (massA + massB),
-            (velocityA.y * massA + velocityB.y * massB) / (massA + massB)
-        );
+        newBall.setVelocity(volumeX, volumeY);
         this.sound.play("biu");
-        // 连续融合
+        // TODO 最好对融合做一下延时，否则连续融合的时候快到甚至看不清
+        // 连续融合的判定和提示
         const now = this.time.now;
         this.fusionTimestamps.push(now);
         this.fusionTimestamps = this.fusionTimestamps.filter(
@@ -143,13 +138,28 @@ export class MainMenu extends Scene {
             this.sound.play("critical");
             this.fusionTimestamps = [];
         }
-        // 合出最大
+        // 合出最大时的提示
         if (newLevel === 11) {
             this.sound.play("game-clear");
         }
     }
 
-    createNewBall({
+    calcNewBallVolume(
+        ballA: Physics.Matter.Image,
+        ballB: Physics.Matter.Image
+    ): [number, number] {
+        const velocityA = ballA.getVelocity();
+        const velocityB = ballB.getVelocity();
+        const massA = ballA.body?.mass || 0;
+        const massB = ballB.body?.mass || 0;
+        const volumeX =
+            (velocityA.x * massA + velocityB.x * massB) / (massA + massB);
+        const volumeY =
+            (velocityA.y * massA + velocityB.y * massB) / (massA + massB);
+        return [volumeX, volumeY];
+    }
+
+    createFusionBall({
         level = (Math.floor(Math.random() * 5) + 1) as BallLevel,
         x = GAME_W / 2,
         y = 175,
@@ -160,7 +170,7 @@ export class MainMenu extends Scene {
         const ball = this.matter.add.image(x, y, `ball-${level}`);
         ball.setCircle(ball.width / 2, {
             restitution: 0.2,
-            friction: 0.1,
+            friction: 0.8,
             frictionAir: 0.01,
             mass: level * level * 0.25,
             label: `ball-${level}`,
