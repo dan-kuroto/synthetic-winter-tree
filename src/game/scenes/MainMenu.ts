@@ -61,23 +61,13 @@ export class MainMenu extends Scene {
         if (!pointer.isDown && this.isDragging && this.currentBall) {
             this.isDragging = false;
             this.throwBall();
-            this.time.delayedCall(
-                1000,
-                () => {
-                    this.currentBall = this.createNewBall();
-                },
-                [],
-                this
-            );
         }
     }
 
     handleCollision(event, bodyA, bodyB) {
-        const labelA = bodyA.label as string;
-        const labelB = bodyB.label as string;
-        if (labelA.startsWith("ball-") && labelB.startsWith("ball-")) {
-            this.handleFusion(bodyA, bodyB);
-        }
+        this.onBallFirstCollided(bodyA);
+        this.onBallFirstCollided(bodyB);
+        this.handleFusion(bodyA, bodyB);
     }
 
     handleOverlap(event) {
@@ -85,17 +75,49 @@ export class MainMenu extends Scene {
         for (const pair of pairs) {
             const bodyA = pair.bodyA;
             const bodyB = pair.bodyB;
-            const labelA = bodyA.label as string;
-            const labelB = bodyB.label as string;
-            if (labelA.startsWith("ball-") && labelB.startsWith("ball-")) {
-                this.handleFusion(bodyA, bodyB);
-            }
+            this.onBallFirstCollided(bodyA);
+            this.onBallFirstCollided(bodyB);
+            this.handleFusion(bodyA, bodyB);
         }
     }
 
+    /**
+     * 处理小球初次碰撞
+     */
+    onBallFirstCollided(body) {
+        const label = body.label as string;
+        // 只处理小球
+        if (!label.startsWith("ball-")) {
+            return;
+        }
+        const ball = body.gameObject as Physics.Matter.Image;
+        // 避免小球已被销毁导致报错
+        if (!ball) {
+            return;
+        }
+        // 不处理挂起还未释放的小球
+        if (ball.getData("suspend")) {
+            return;
+        }
+        // 只处理第一次碰撞
+        if (ball.getData("hasCollided")) {
+            return;
+        }
+        ball.setData("hasCollided", true);
+
+        this.currentBall = this.createNewBall();
+    }
+
+    /**
+     * 处理小球融合
+     */
     handleFusion(bodyA, bodyB) {
         const labelA = bodyA.label as string;
         const labelB = bodyB.label as string;
+        // 只有小球之间的碰撞才处理
+        if (!labelA.startsWith("ball-") || !labelB.startsWith("ball-")) {
+            return;
+        }
         // 同种类才能合成
         if (labelA !== labelB) {
             return;
@@ -192,6 +214,7 @@ export class MainMenu extends Scene {
         }
         this.currentBall.setSensor(false);
         this.currentBall.setStatic(false);
+        this.currentBall.setData("suspend", false);
         this.currentBall = null;
     }
 
@@ -222,6 +245,10 @@ export class MainMenu extends Scene {
         if (isInit) {
             ball.setSensor(true);
             ball.setStatic(true);
+            ball.setData("suspend", true);
+        } else {
+            // 融合小球认为已经碰撞过了(否则融合后初次碰撞会再次触发创建新小球)
+            ball.setData("hasCollided", true);
         }
 
         this.balls.add(ball);
