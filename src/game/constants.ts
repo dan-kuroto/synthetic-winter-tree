@@ -16,4 +16,4 @@ export const FUSION_INTERVAL = 1000;
 /**
  * 小球连续融合的次数阈值，超过这个次数则播放暴击音效
  */
-export const FUSION_THRESHOLD = 4;
+export const FUSION_THRESHOLD = 3;

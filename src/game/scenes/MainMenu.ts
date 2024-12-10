@@ -113,9 +113,25 @@ export class MainMenu extends Scene {
         const ballB = bodyB.gameObject as Physics.Matter.Image;
         const x = (ballA.x + ballB.x) / 2;
         const y = (ballA.y + ballB.y) / 2;
-        bodyA.gameObject.destroy();
-        bodyB.gameObject.destroy();
-        this.createNewBall({ level: newLevel, x, y, isStatic: false });
+
+        // 计算新小球的速度
+        const velocityA = ballA.getVelocity();
+        const velocityB = ballB.getVelocity();
+        const massA = ballA.body?.mass || 0;
+        const massB = ballB.body?.mass || 0;
+
+        ballA.destroy();
+        ballB.destroy();
+        const newBall = this.createNewBall({
+            level: newLevel,
+            x,
+            y,
+            isStatic: false,
+        });
+        newBall.setVelocity(
+            (velocityA.x * massA + velocityB.x * massB) / (massA + massB),
+            (velocityA.y * massA + velocityB.y * massB) / (massA + massB)
+        );
         this.sound.play("biu");
         // 连续融合
         const now = this.time.now;
@@ -142,7 +158,7 @@ export class MainMenu extends Scene {
             restitution: 0.2,
             friction: 0.1,
             frictionAir: 0.01,
-            mass: level * 0.5,
+            mass: level * level * 0.25,
             label: `ball-${level}`,
         });
         ball.setStatic(isStatic);
