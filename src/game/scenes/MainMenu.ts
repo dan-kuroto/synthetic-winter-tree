@@ -2,8 +2,9 @@ import { GameObjects, Physics, Scene } from "phaser";
 
 import { EventBus } from "../EventBus";
 import {
-    FUSION_INTERVAL,
-    FUSION_THRESHOLD,
+    CONTINUOUS_INTERVAL,
+    CONTINUOUS_THRESHOLD,
+    FUSION_MIN_INTERVAL,
     GAME_H,
     GAME_W,
 } from "../constants";
@@ -109,6 +110,12 @@ export class MainMenu extends Scene {
         ) {
             return;
         }
+        const now = this.time.now;
+        const lastTime =
+            this.fusionTimestamps[this.fusionTimestamps.length - 1] || 0;
+        if (now - lastTime < FUSION_MIN_INTERVAL) {
+            return;
+        }
 
         const newLevel = (levelA + 1) as BallLevel;
         // 算分
@@ -126,14 +133,12 @@ export class MainMenu extends Scene {
         ballA.destroy();
         ballB.destroy();
         this.sound.play("biu");
-        // TODO 最好对融合做一下延时，否则连续融合的时候快到甚至看不清
         // 连续融合的判定和提示
-        const now = this.time.now;
         this.fusionTimestamps.push(now);
         this.fusionTimestamps = this.fusionTimestamps.filter(
-            (timestamp) => now - timestamp <= FUSION_INTERVAL
+            (timestamp) => now - timestamp <= CONTINUOUS_INTERVAL
         );
-        if (this.fusionTimestamps.length >= FUSION_THRESHOLD) {
+        if (this.fusionTimestamps.length >= CONTINUOUS_THRESHOLD) {
             this.sound.play("critical");
             this.fusionTimestamps = [];
         }
