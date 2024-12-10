@@ -1,7 +1,12 @@
 import { GameObjects, Physics, Scene } from "phaser";
 
 import { EventBus } from "../EventBus";
-import { GAME_H, GAME_W } from "../constants";
+import {
+    FUSION_INTERVAL,
+    FUSION_THRESHOLD,
+    GAME_H,
+    GAME_W,
+} from "../constants";
 
 type BallLevel = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
 
@@ -10,6 +15,7 @@ export class MainMenu extends Scene {
     scoreText: GameObjects.Text;
     balls: GameObjects.Group;
     currentBall: Physics.Matter.Image | null = null;
+    fusionTimestamps: number[] = [];
 
     isDragging = false;
     score = 0;
@@ -100,8 +106,9 @@ export class MainMenu extends Scene {
         }
 
         const newLevel = (levelA + 1) as BallLevel;
+        // 算分
         this.increaseScore(levelA + (newLevel === 11 ? 100 : 0));
-        // start fusion
+        // 融合
         const ballA = bodyA.gameObject as Physics.Matter.Image;
         const ballB = bodyB.gameObject as Physics.Matter.Image;
         const x = (ballA.x + ballB.x) / 2;
@@ -109,8 +116,17 @@ export class MainMenu extends Scene {
         bodyA.gameObject.destroy();
         bodyB.gameObject.destroy();
         this.createNewBall({ level: newLevel, x, y, isStatic: false });
-
         this.sound.play("biu");
+        // 连续融合
+        const now = this.time.now;
+        this.fusionTimestamps.push(now);
+        this.fusionTimestamps = this.fusionTimestamps.filter(
+            (timestamp) => now - timestamp <= FUSION_INTERVAL
+        );
+        if (this.fusionTimestamps.length >= FUSION_THRESHOLD) {
+            this.sound.play("critical");
+            this.fusionTimestamps = [];
+        }
     }
 
     createNewBall({
