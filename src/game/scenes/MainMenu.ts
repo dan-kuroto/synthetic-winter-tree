@@ -96,24 +96,34 @@ export class MainMenu extends Scene {
     handleFusion(bodyA, bodyB) {
         const labelA = bodyA.label as string;
         const labelB = bodyB.label as string;
+        // 同种类才能合成
         if (labelA !== labelB) {
             return;
         }
+        // 11级小球不能再合成
         const levelA = parseInt(labelA.split("-")[1], 10) as BallLevel;
         const levelB = parseInt(labelB.split("-")[1], 10) as BallLevel;
         if (levelA !== levelB || levelA === 11 || levelB === 11) {
             return;
         }
+        // 当前正在操作的小球不能合成
         if (
             bodyA === this.currentBall?.body ||
             bodyB === this.currentBall?.body
         ) {
             return;
         }
+        // 避免连续合成太快看不清
         const now = this.time.now;
         const lastTime =
             this.fusionTimestamps[this.fusionTimestamps.length - 1] || 0;
         if (now - lastTime < FUSION_MIN_INTERVAL) {
+            return;
+        }
+        // 连续合成时似乎有概率一个小球被重复合成导致报错(因为上次合成后已经被销毁了)
+        const ballA = bodyA.gameObject as Physics.Matter.Image;
+        const ballB = bodyB.gameObject as Physics.Matter.Image;
+        if (!ballA || !ballB) {
             return;
         }
 
@@ -121,8 +131,6 @@ export class MainMenu extends Scene {
         // 算分
         this.increaseScore(levelA + (newLevel === 11 ? 100 : 0));
         // 融合
-        const ballA = bodyA.gameObject as Physics.Matter.Image;
-        const ballB = bodyB.gameObject as Physics.Matter.Image;
         const x = (ballA.x + ballB.x) / 2;
         const y = (ballA.y + ballB.y) / 2;
 
