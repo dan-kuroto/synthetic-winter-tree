@@ -126,6 +126,10 @@ export class MainMenu extends Scene {
         if (!ballA || !ballB) {
             return;
         }
+        // 正在动画中的小球不能合成(否则被销毁后动画那边会报错)
+        if (ballA.getData("isAnimating") || ballB.getData("isAnimating")) {
+            return;
+        }
 
         const newLevel = (levelA + 1) as BallLevel;
         // 算分
@@ -138,6 +142,17 @@ export class MainMenu extends Scene {
         const [volumeX, volumeY] = this.calcNewBallVolume(ballA, ballB);
         const newBall = this.createFusionBall(newLevel, x, y);
         newBall.setVelocity(volumeX, volumeY);
+        newBall.setScale(0.9);
+        newBall.setData("isAnimating", true);
+        this.tweens.add({
+            targets: newBall,
+            scale: 1,
+            duration: FUSION_MIN_INTERVAL,
+            ease: "Power2",
+            onComplete: () => {
+                newBall.setData("isAnimating", false);
+            },
+        });
         ballA.destroy();
         ballB.destroy();
         this.sound.play("biu");
