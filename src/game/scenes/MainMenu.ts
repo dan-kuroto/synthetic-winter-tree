@@ -41,7 +41,7 @@ export class MainMenu extends Scene {
             .setDepth(100);
 
         this.balls = this.add.group({ classType: GameObjects.Image });
-        this.currentBall = this.createFusionBall({});
+        this.currentBall = this.createNewBall();
         this.matter.world.on("collisionstart", this.handleCollision, this);
         this.matter.world.on("collisionactive", this.handleOverlap, this);
 
@@ -59,12 +59,11 @@ export class MainMenu extends Scene {
         }
         if (!pointer.isDown && this.isDragging && this.currentBall) {
             this.isDragging = false;
-            this.currentBall.setStatic(false);
-            this.currentBall = null;
+            this.throwBall();
             this.time.delayedCall(
                 1000,
                 () => {
-                    this.currentBall = this.createFusionBall({});
+                    this.currentBall = this.createNewBall();
                 },
                 [],
                 this
@@ -104,6 +103,12 @@ export class MainMenu extends Scene {
         if (levelA !== levelB || levelA === 11 || levelB === 11) {
             return;
         }
+        if (
+            bodyA === this.currentBall?.body ||
+            bodyB === this.currentBall?.body
+        ) {
+            return;
+        }
 
         const newLevel = (levelA + 1) as BallLevel;
         // 算分
@@ -116,16 +121,10 @@ export class MainMenu extends Scene {
 
         // 融合逻辑
         const [volumeX, volumeY] = this.calcNewBallVolume(ballA, ballB);
-        // BUG 如果挂起小球就是碰撞二者之一，然后在这里被销毁，鼠标拖动事件的时候就改不了坐标了！空指针！
+        const newBall = this.createFusionBall(newLevel, x, y);
+        newBall.setVelocity(volumeX, volumeY);
         ballA.destroy();
         ballB.destroy();
-        const newBall = this.createFusionBall({
-            level: newLevel,
-            x,
-            y,
-            isStatic: false,
-        });
-        newBall.setVelocity(volumeX, volumeY);
         this.sound.play("biu");
         // TODO 最好对融合做一下延时，否则连续融合的时候快到甚至看不清
         // 连续融合的判定和提示
@@ -159,12 +158,29 @@ export class MainMenu extends Scene {
         return [volumeX, volumeY];
     }
 
-    createFusionBall({
-        level = (Math.floor(Math.random() * 5) + 1) as BallLevel,
-        x = GAME_W / 2,
-        y = 175,
-        isStatic = true,
-    }) {
+    throwBall() {
+        if (!this.currentBall) {
+            return;
+        }
+        this.currentBall.setSensor(false);
+        this.currentBall.setStatic(false);
+        this.currentBall = null;
+    }
+
+    createNewBall() {
+        return this.createBall(
+            (Math.floor(Math.random() * 5) + 1) as BallLevel,
+            GAME_W / 2,
+            175,
+            true
+        );
+    }
+
+    createFusionBall(level: BallLevel, x: number, y: number) {
+        return this.createBall(level, x, y, false);
+    }
+
+    createBall(level: BallLevel, x: number, y: number, isInit: boolean) {
         // 当小球堆到最顶上的时候会导致跟新创建的小球发生重叠挤压碰撞，但不用担心，以后有了安全线就不会有这个问题了
         // 在那之前就游戏结束了！
         const ball = this.matter.add.image(x, y, `ball-${level}`);
@@ -175,7 +191,10 @@ export class MainMenu extends Scene {
             mass: level * level * 0.25,
             label: `ball-${level}`,
         });
-        ball.setStatic(isStatic);
+        if (isInit) {
+            ball.setSensor(true);
+            ball.setStatic(true);
+        }
 
         this.balls.add(ball);
         return ball;
