@@ -143,6 +143,10 @@ export class MainMenu extends Scene {
             this.sound.play("critical");
             this.fusionTimestamps = [];
         }
+        // 合出最大
+        if (newLevel === 11) {
+            this.sound.play("game-clear");
+        }
     }
 
     createNewBall({
