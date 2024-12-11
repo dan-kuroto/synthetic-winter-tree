@@ -25,6 +25,7 @@ export class MainMenu extends Scene {
     currentBall: Physics.Matter.Image | null = null;
     warningLineTween: Phaser.Tweens.Tween | null = null;
     gameOverTimer: Phaser.Time.TimerEvent | null = null;
+    darkOverlay: GameObjects.Rectangle;
 
     fusionTimestamps: number[] = [];
     isDragging = false;
@@ -77,6 +78,12 @@ export class MainMenu extends Scene {
         this.currentBall = this.createNewBall();
         this.matter.world.on("collisionstart", this.handleCollision, this);
         this.matter.world.on("collisionactive", this.handleOverlap, this);
+
+        this.darkOverlay = this.add
+            .rectangle(0, 0, GAME_W, GAME_H, 0x000000, 1)
+            .setAlpha(0)
+            .setOrigin(0)
+            .setDepth(99);
 
         EventBus.emit("current-scene-ready", this);
     }
@@ -196,6 +203,15 @@ export class MainMenu extends Scene {
             alpha: 1,
             duration: 700,
         });
+        // 添加屏幕变暗效果
+        if (this.darkOverlay) {
+            this.tweens.add({
+                targets: this.darkOverlay,
+                alpha: 0.5,
+                duration: 700,
+                ease: "Power2",
+            });
+        }
     }
 
     handleCollision(event, bodyA, bodyB) {
