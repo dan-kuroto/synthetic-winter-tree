@@ -156,6 +156,17 @@ export class MainMenu extends Scene {
         if (ballA.getData("isAnimating") || ballB.getData("isAnimating")) {
             return;
         }
+        // 将要销毁的小球不能合成
+        if (
+            ballA.getData("aboutToDestroy") ||
+            ballB.getData("aboutToDestroy")
+        ) {
+            return;
+        }
+        // 处于sensor状态的小球不能合成
+        if (ballA.isSensor() || ballB.isSensor()) {
+            return;
+        }
 
         const newLevel = (levelA + 1) as BallLevel;
         // 算分
@@ -168,19 +179,7 @@ export class MainMenu extends Scene {
         const [volumeX, volumeY] = this.calcNewBallVolume(ballA, ballB);
         const newBall = this.createFusionBall(newLevel, x, y);
         newBall.setVelocity(volumeX, volumeY);
-        newBall.setScale(0.9);
-        newBall.setData("isAnimating", true);
-        this.tweens.add({
-            targets: newBall,
-            scale: 1,
-            duration: FUSION_MIN_INTERVAL,
-            ease: "Power2",
-            onComplete: () => {
-                newBall.setData("isAnimating", false);
-            },
-        });
-        ballA.destroy();
-        ballB.destroy();
+        this.fusionAnimation(ballA, ballB, newBall);
         this.sound.play("biu");
         // 连续融合的判定和提示
         this.fusionTimestamps.push(now);
@@ -195,6 +194,46 @@ export class MainMenu extends Scene {
         if (newLevel === 11) {
             this.sound.play("game-clear");
         }
+    }
+
+    fusionAnimation(
+        ballA: Physics.Matter.Image,
+        ballB: Physics.Matter.Image,
+        newBall: Physics.Matter.Image
+    ) {
+        newBall.setScale(0.9);
+        newBall.setData("isAnimating", true);
+        this.tweens.add({
+            targets: newBall,
+            scale: 1,
+            duration: FUSION_MIN_INTERVAL,
+            ease: "Power2",
+            onComplete: () => {
+                newBall.setData("isAnimating", false);
+            },
+        });
+
+        for (const ball of [ballA, ballB]) {
+            ball.setData("aboutToDestroy", true);
+            ball.setSensor(true);
+            ball.setStatic(true);
+            ball.setZ(1);
+        }
+        // 球A和球B的销毁动画 向彼此靠拢
+        this.tweens.add({
+            targets: [ballA, ballB],
+            x: newBall.x,
+            y: newBall.y,
+            width: 0,
+            height: 0,
+            aphla: 0,
+            duration: FUSION_MIN_INTERVAL / 2, // 旧球消失比新球出现快一点
+            ease: "Power2",
+            onComplete: () => {
+                ballA.destroy();
+                ballB.destroy();
+            },
+        });
     }
 
     calcNewBallVolume(
