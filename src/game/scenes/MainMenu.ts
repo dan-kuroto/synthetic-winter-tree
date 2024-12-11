@@ -9,6 +9,7 @@ import {
     GAME_H,
     GAME_W,
     GROUND_IMG_H,
+    LAST_WARNING_TIME,
     WARNING_LINE_THRESHOLD,
     WARNING_LINE_Y,
 } from "../constants";
@@ -22,6 +23,7 @@ export class MainMenu extends Scene {
     balls: GameObjects.Group;
     currentBall: Physics.Matter.Image | null = null;
     warningLineTween: Phaser.Tweens.Tween | null = null;
+    gameOverTimer: Phaser.Time.TimerEvent | null = null;
 
     fusionTimestamps: number[] = [];
     isDragging = false;
@@ -109,8 +111,8 @@ export class MainMenu extends Scene {
             }
         }
         // 不是游戏结束准备状态，重置标记
-        if (!aboutToGameOver) {
-            this.aboutToGameOver = false;
+        if (!aboutToGameOver && this.aboutToGameOver) {
+            this.cancelGameOver();
         }
         // 隐藏警戒线
         if (!showWarning) {
@@ -134,12 +136,40 @@ export class MainMenu extends Scene {
         }
         // 游戏结束准备
         if (aboutToGameOver && !this.aboutToGameOver) {
-            this.aboutToGameOver = true;
-            console.log("游戏结束准备");
-            // 播放游戏结束音效
-            this.sound.play("game-over");
-            // TODO 开始游戏结束准备后N秒开始播放音效，音效播放完毕后游戏结束，期间一旦“游戏结束准备”状态解除则取消游戏结束准备状态、取消音效播放
+            this.prepareGameOver();
         }
+    }
+
+    cancelGameOver() {
+        console.log("取消游戏结束");
+        this.aboutToGameOver = false;
+        // 警戒线闪烁动画恢复正常
+        if (this.warningLineTween) {
+            this.warningLineTween.timeScale = 1;
+        }
+        // 取消游戏结束计时器
+        if (this.gameOverTimer) {
+            this.gameOverTimer.remove();
+            this.gameOverTimer = null;
+        }
+    }
+
+    prepareGameOver() {
+        console.log("准备游戏结束");
+        this.aboutToGameOver = true;
+        // 警戒线闪烁动画加速
+        if (this.warningLineTween) {
+            this.warningLineTween.timeScale = 4;
+        }
+        // 计时一段时间后开始播放游戏结束音效
+        this.gameOverTimer = this.time.delayedCall(
+            LAST_WARNING_TIME,
+            () => {
+                this.sound.play("game-over");
+            },
+            [],
+            this
+        );
     }
 
     handleCollision(event, bodyA, bodyB) {

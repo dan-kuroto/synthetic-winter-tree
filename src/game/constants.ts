@@ -42,3 +42,8 @@ export const CONTINUOUS_INTERVAL = 1000;
  * 小球连续融合的次数阈值，超过这个次数则播放暴击音效
  */
 export const CONTINUOUS_THRESHOLD = 4;
+
+/**
+ * 超过警戒线后的最后警告时间(到达后游戏结束,播放警告音效)
+ */
+export const LAST_WARNING_TIME = 5000;
