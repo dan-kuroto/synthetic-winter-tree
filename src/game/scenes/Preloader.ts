@@ -8,7 +8,7 @@ export class Preloader extends Scene {
 
     init() {
         //  We loaded this image in our Boot Scene, so we can display it here
-        this.add.image(GAME_W / 2, GAME_H / 2, "background");
+        this.add.image(GAME_W / 2, GAME_H, "ground").setOrigin(0.5, 1);
 
         //  A simple progress bar. This is the outline of the bar.
         this.add

@@ -7,12 +7,13 @@ import {
     FUSION_MIN_INTERVAL,
     GAME_H,
     GAME_W,
+    GROUND_IMG_H,
 } from "../constants";
 
 type BallLevel = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
 
 export class MainMenu extends Scene {
-    background: GameObjects.Image;
+    ground: GameObjects.Image;
     scoreText: GameObjects.Text;
     balls: GameObjects.Group;
     currentBall: Physics.Matter.Image | null = null;
@@ -28,14 +29,16 @@ export class MainMenu extends Scene {
     create() {
         this.matter.world.setBounds(0, 0, GAME_W, GAME_H);
 
-        this.background = this.add.image(GAME_W / 2, GAME_H / 2, "background");
+        this.ground = this.matter.add
+            .image(GAME_W / 2, GAME_H - GROUND_IMG_H / 2, "ground")
+            .setStatic(true);
 
         this.scoreText = this.add
             .text(10, 10, `SCORE  ${this.score}`, {
                 fontFamily: "Arial Black",
                 fontSize: 58,
                 color: "#ee548e",
-                stroke: "#000000",
+                stroke: "#ffffff",
                 strokeThickness: 5,
                 align: "center",
             })
