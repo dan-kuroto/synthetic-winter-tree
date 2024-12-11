@@ -130,6 +130,7 @@ export class MainMenu extends Scene {
             // 如果小球超出警戒线阈值，显示警戒线
             if (ballTop < WARNING_LINE_Y + WARNING_LINE_THRESHOLD) {
                 showWarning = true;
+                // BUG 这里的判断不对！有可能一个超出警戒线阈值但没超出警戒线的小球出现，导致提前结束检测，然后就没发现超出警戒线的小球了！
                 // 如果小球甚至超出警戒线，准备游戏结束
                 if (ballTop < WARNING_LINE_Y) {
                     aboutToGameOver = true;
@@ -408,6 +409,8 @@ export class MainMenu extends Scene {
     }
 
     createNewBall() {
+        // NOTE 注意这里如果生成小球太大有可能会触发跟天花板的碰撞，导致可以无CD连续生成小球
+        //      但只要保证最大不超过5级小球就不会有这个问题，不是BUG！
         return this.createBall(
             (Math.floor(Math.random() * 5) + 1) as BallLevel,
             GAME_W / 2,
