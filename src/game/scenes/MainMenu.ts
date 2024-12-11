@@ -2,12 +2,15 @@ import { GameObjects, Physics, Scene } from "phaser";
 
 import { EventBus } from "../EventBus";
 import {
+    BALL_INIT_Y,
     CONTINUOUS_INTERVAL,
     CONTINUOUS_THRESHOLD,
     FUSION_MIN_INTERVAL,
     GAME_H,
     GAME_W,
     GROUND_IMG_H,
+    WARNING_LINE_THRESHOLD,
+    WARNING_LINE_Y,
 } from "../constants";
 
 type BallLevel = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
@@ -18,10 +21,12 @@ export class MainMenu extends Scene {
     warningLine: GameObjects.Image;
     balls: GameObjects.Group;
     currentBall: Physics.Matter.Image | null = null;
-    fusionTimestamps: number[] = [];
+    warningLineTween: Phaser.Tweens.Tween | null = null;
 
+    fusionTimestamps: number[] = [];
     isDragging = false;
     score = 0;
+    aboutToGameOver = false;
 
     constructor() {
         super("MainMenu");
@@ -47,7 +52,7 @@ export class MainMenu extends Scene {
         this.setScore(0);
 
         this.warningLine = this.add
-            .image(GAME_W / 2, 400, "warning-line")
+            .image(GAME_W / 2, WARNING_LINE_Y, "warning-line")
             .setZ(1)
             .setAlpha(0);
 
@@ -61,6 +66,7 @@ export class MainMenu extends Scene {
 
     update(time: number, delta: number): void {
         const pointer = this.input.activePointer;
+        // 拖动小球
         if (pointer.isDown && this.currentBall) {
             this.isDragging = true;
             let x = pointer.x;
@@ -68,9 +74,71 @@ export class MainMenu extends Scene {
             x = Math.max(x, this.currentBall.width / 2);
             this.currentBall.setX(x);
         }
+        // 放开小球
         if (!pointer.isDown && this.isDragging && this.currentBall) {
             this.isDragging = false;
             this.throwBall();
+        }
+        // 警戒线
+        this.warningCheck();
+    }
+
+    warningCheck() {
+        // 是否显示警戒线
+        let showWarning = false;
+        let aboutToGameOver = false;
+        for (const ball of this.balls.getChildren() as Physics.Matter.Image[]) {
+            // 小球已经被销毁
+            if (!ball.body) {
+                continue;
+            }
+            // 小球还没发生过碰撞
+            if (!ball.getData("hasCollided")) {
+                continue;
+            }
+            // 小球中心点Y坐标-半径Y坐标
+            const ballTop = ball.y - ball.height / 2;
+            // 如果小球超出警戒线阈值，显示警戒线
+            if (ballTop < WARNING_LINE_Y + WARNING_LINE_THRESHOLD) {
+                showWarning = true;
+                // 如果小球甚至超出警戒线，准备游戏结束
+                if (ballTop < WARNING_LINE_Y) {
+                    aboutToGameOver = true;
+                }
+                break;
+            }
+        }
+        // 不是游戏结束准备状态，重置标记
+        if (!aboutToGameOver) {
+            this.aboutToGameOver = false;
+        }
+        // 隐藏警戒线
+        if (!showWarning) {
+            this.warningLine.setAlpha(0);
+            if (this.warningLineTween) {
+                this.warningLineTween.stop();
+                this.warningLineTween = null;
+            }
+            return;
+        }
+        // 显示警戒线
+        if (!this.warningLineTween || !this.warningLineTween.isPlaying()) {
+            this.warningLine.setAlpha(1);
+            this.warningLineTween = this.tweens.add({
+                targets: this.warningLine,
+                alpha: 0,
+                duration: 500,
+                yoyo: true,
+                repeat: -1,
+            });
+        }
+        // 游戏结束准备
+        if (aboutToGameOver && !this.aboutToGameOver) {
+            this.aboutToGameOver = true;
+            console.log("游戏结束准备");
+            // 播放游戏结束音效
+            this.sound.play("game-over");
+            // TODO 开始游戏结束准备后N秒开始播放音效，音效播放完毕后游戏结束，期间一旦“游戏结束准备”状态解除则取消游戏结束准备状态、取消音效播放
         }
     }
 
@@ -271,7 +339,7 @@ export class MainMenu extends Scene {
         return this.createBall(
             (Math.floor(Math.random() * 5) + 1) as BallLevel,
             GAME_W / 2,
-            175,
+            BALL_INIT_Y,
             true
         );
     }

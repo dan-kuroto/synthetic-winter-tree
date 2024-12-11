@@ -14,6 +14,21 @@ export const GAME_H = 2160;
 export const GROUND_IMG_H = 240;
 
 /**
+ * 小球初始Y坐标
+ */
+export const BALL_INIT_Y = 175;
+
+/**
+ * 警戒线的Y坐标
+ */
+export const WARNING_LINE_Y = 400;
+
+/**
+ * 显示警戒线的阈值(提前一段距离开始显示)
+ */
+export const WARNING_LINE_THRESHOLD = 200;
+
+/**
  * 小球连续融合的最短时间间隔 避免融合过快看不清
  */
 export const FUSION_MIN_INTERVAL = 200;
