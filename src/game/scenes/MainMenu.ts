@@ -34,7 +34,7 @@ export class MainMenu extends Scene {
             .setStatic(true);
 
         this.scoreText = this.add
-            .text(10, 10, `SCORE  ${this.score}`, {
+            .text(40, 20, "", {
                 fontFamily: "Arial Black",
                 fontSize: 58,
                 color: "#ee548e",
@@ -43,6 +43,7 @@ export class MainMenu extends Scene {
                 align: "center",
             })
             .setDepth(100);
+        this.setScore(0);
 
         this.balls = this.add.group({ classType: GameObjects.Image });
         this.currentBall = this.createNewBall();
@@ -259,12 +260,15 @@ export class MainMenu extends Scene {
     }
 
     increaseScore(delta: number) {
-        this.score += delta;
-        this.scoreText.setText(`SCORE  ${this.score}`);
+        this.setScore(this.score + delta);
     }
 
     clearScore() {
-        this.score = 0;
-        this.scoreText.setText(`SCORE  ${this.score}`);
+        this.setScore(0);
+    }
+
+    setScore(score: number) {
+        this.score = score;
+        this.scoreText.setText(this.score + "");
     }
 }
