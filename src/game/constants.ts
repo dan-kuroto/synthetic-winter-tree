@@ -46,4 +46,4 @@ export const CONTINUOUS_THRESHOLD = 4;
 /**
  * 超过警戒线后的最后警告时间(到达后游戏结束,播放警告音效)
  */
-export const LAST_WARNING_TIME = 5000;
+export const LAST_WARNING_TIME = 2000;

@@ -19,6 +19,7 @@ type BallLevel = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
 export class MainMenu extends Scene {
     ground: GameObjects.Image;
     scoreText: GameObjects.Text;
+    gameOverText: GameObjects.Text;
     warningLine: GameObjects.Image;
     balls: GameObjects.Group;
     currentBall: Physics.Matter.Image | null = null;
@@ -29,6 +30,7 @@ export class MainMenu extends Scene {
     isDragging = false;
     score = 0;
     aboutToGameOver = false;
+    isGameOver = false;
 
     constructor() {
         super("MainMenu");
@@ -53,9 +55,22 @@ export class MainMenu extends Scene {
             .setDepth(100);
         this.setScore(0);
 
+        this.gameOverText = this.add
+            .text(GAME_W / 2, GAME_H / 2, "Game Over", {
+                fontFamily: "Arial Black",
+                fontSize: 150,
+                color: "#ee548e",
+                stroke: "#ffffff",
+                strokeThickness: 5,
+                align: "center",
+            })
+            .setOrigin(0.5)
+            .setDepth(100)
+            .setAlpha(0);
+
         this.warningLine = this.add
             .image(GAME_W / 2, WARNING_LINE_Y, "warning-line")
-            .setZ(1)
+            .setDepth(100)
             .setAlpha(0);
 
         this.balls = this.add.group({ classType: GameObjects.Image });
@@ -69,7 +84,7 @@ export class MainMenu extends Scene {
     update(time: number, delta: number): void {
         const pointer = this.input.activePointer;
         // 拖动小球
-        if (pointer.isDown && this.currentBall) {
+        if (!this.isGameOver && pointer.isDown && this.currentBall) {
             this.isDragging = true;
             let x = pointer.x;
             x = Math.min(x, GAME_W - this.currentBall.width / 2);
@@ -77,7 +92,12 @@ export class MainMenu extends Scene {
             this.currentBall.setX(x);
         }
         // 放开小球
-        if (!pointer.isDown && this.isDragging && this.currentBall) {
+        if (
+            !this.isGameOver &&
+            !pointer.isDown &&
+            this.isDragging &&
+            this.currentBall
+        ) {
             this.isDragging = false;
             this.throwBall();
         }
@@ -141,7 +161,6 @@ export class MainMenu extends Scene {
     }
 
     cancelGameOver() {
-        console.log("取消游戏结束");
         this.aboutToGameOver = false;
         // 警戒线闪烁动画恢复正常
         if (this.warningLineTween) {
@@ -155,7 +174,6 @@ export class MainMenu extends Scene {
     }
 
     prepareGameOver() {
-        console.log("准备游戏结束");
         this.aboutToGameOver = true;
         // 警戒线闪烁动画加速
         if (this.warningLineTween) {
@@ -164,12 +182,20 @@ export class MainMenu extends Scene {
         // 计时一段时间后开始播放游戏结束音效
         this.gameOverTimer = this.time.delayedCall(
             LAST_WARNING_TIME,
-            () => {
-                this.sound.play("game-over");
-            },
+            this.gameOver,
             [],
             this
         );
+    }
+
+    gameOver() {
+        this.isGameOver = true;
+        this.sound.play("game-over");
+        this.tweens.add({
+            targets: this.gameOverText,
+            alpha: 1,
+            duration: 700,
+        });
     }
 
     handleCollision(event, bodyA, bodyB) {
@@ -321,7 +347,7 @@ export class MainMenu extends Scene {
             ball.setData("aboutToDestroy", true);
             ball.setSensor(true);
             ball.setStatic(true);
-            ball.setZ(1);
+            ball.setDepth(-1);
         }
         // 球A和球B的销毁动画 向彼此靠拢
         this.tweens.add({
