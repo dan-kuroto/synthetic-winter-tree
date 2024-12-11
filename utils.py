@@ -52,10 +52,10 @@ def process_image(input_path, output_path, size, border_size, border_color):
 
 
 # 示例用法
-input_path = "input.png"  # 输入图片路径
-output_path = "output.png"  # 输出图片路径
+input_path = "./public/assets/input.png"  # 输入图片路径
+output_path = "./public/assets/ball-11.png"  # 输出图片路径
 size = 700  # 调整后的图片大小（宽度和高度）
 border_size = 5  # 边框宽度
-border_color = (0, 0, 0, 255)  # 边框颜色（红色，带透明度）
+border_color = (238, 84, 142, 255)  # 边框颜色
 
 process_image(input_path, output_path, size, border_size, border_color)
