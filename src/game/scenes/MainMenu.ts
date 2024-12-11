@@ -15,6 +15,7 @@ type BallLevel = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
 export class MainMenu extends Scene {
     ground: GameObjects.Image;
     scoreText: GameObjects.Text;
+    warningLine: GameObjects.Image;
     balls: GameObjects.Group;
     currentBall: Physics.Matter.Image | null = null;
     fusionTimestamps: number[] = [];
@@ -44,6 +45,11 @@ export class MainMenu extends Scene {
             })
             .setDepth(100);
         this.setScore(0);
+
+        this.warningLine = this.add
+            .image(GAME_W / 2, 400, "warning-line")
+            .setZ(1)
+            .setAlpha(0);
 
         this.balls = this.add.group({ classType: GameObjects.Image });
         this.currentBall = this.createNewBall();
@@ -226,7 +232,7 @@ export class MainMenu extends Scene {
             y: newBall.y,
             width: 0,
             height: 0,
-            aphla: 0,
+            alpha: 0,
             duration: FUSION_MIN_INTERVAL / 2, // 旧球消失比新球出现快一点
             ease: "Power2",
             onComplete: () => {

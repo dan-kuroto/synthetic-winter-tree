@@ -13,7 +13,7 @@ export class Preloader extends Scene {
         //  A simple progress bar. This is the outline of the bar.
         this.add
             .rectangle(GAME_W / 2, GAME_H / 3, 468, 32)
-            .setStrokeStyle(1, 0xffffff);
+            .setStrokeStyle(1, 0x77513b);
 
         //  This is the progress bar itself. It will increase in size from the left based on the % of progress.
         const bar = this.add.rectangle(
@@ -21,7 +21,7 @@ export class Preloader extends Scene {
             GAME_H / 3,
             4,
             28,
-            0xffffff
+            0xb28955
         );
 
         //  Use the 'progress' event emitted by the LoaderPlugin to update the loading bar
@@ -38,6 +38,7 @@ export class Preloader extends Scene {
         for (let i = 1; i <= 11; i++) {
             this.load.image(`ball-${i}`, `ball-${i}.png`);
         }
+        this.load.image("warning-line", "warning-line.png");
         this.load.audio("biu", "biu.mp3");
         this.load.audio("critical", "critical.mp3");
         this.load.audio("game-over", "game-over.mp3");
