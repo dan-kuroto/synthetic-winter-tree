@@ -33,7 +33,7 @@ export class Preloader extends Scene {
 
     preload() {
         //  Load the assets for the game - Replace with your own assets
-        this.load.setPath("synthetic-winter-tree/assets");
+        this.load.setPath("assets");
 
         for (let i = 1; i <= 11; i++) {
             this.load.image(`ball-${i}`, `ball-${i}.png`);

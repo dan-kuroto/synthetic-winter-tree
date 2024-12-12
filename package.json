@@ -15,7 +15,7 @@
         "dev-nolog": "vite --config vite/config.dev.mjs",
         "build-nolog": "vite build --config vite/config.prod.mjs",
         "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
-        "preview": "vite preview --config vite/config.prod.mjs"
+        "preview": "vite preview --config vite/config.prod.mjs --log-level info"
     },
     "dependencies": {
         "phaser": "^3.87.0",
