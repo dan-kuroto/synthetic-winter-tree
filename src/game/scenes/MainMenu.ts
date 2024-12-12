@@ -47,7 +47,7 @@ export class MainMenu extends Scene {
         this.scoreText = this.add
             .text(40, 20, "", {
                 fontFamily: "Arial Black",
-                fontSize: 58,
+                fontSize: 108,
                 color: "#ee548e",
                 stroke: "#ffffff",
                 strokeThickness: 5,
@@ -332,12 +332,11 @@ export class MainMenu extends Scene {
         }
 
         const newLevel = (levelA + 1) as BallLevel;
-        // 算分
-        this.increaseScore(levelA + (newLevel === 11 ? 100 : 0));
-        // 融合
         const x = (ballA.x + ballB.x) / 2;
         const y = (ballA.y + ballB.y) / 2;
-
+        // 算分
+        const scoreDelta = levelA + (newLevel === 11 ? 100 : 0);
+        this.increaseScoreWithAnimation(scoreDelta, x, y);
         // 融合逻辑
         const [volumeX, volumeY] = this.calcNewBallVolume(ballA, ballB);
         const newBall = this.createFusionBall(newLevel, x, y);
@@ -465,10 +464,6 @@ export class MainMenu extends Scene {
         return ball;
     }
 
-    increaseScore(delta: number) {
-        this.setScore(this.score + delta);
-    }
-
     clearScore() {
         this.setScore(0);
     }
@@ -476,5 +471,31 @@ export class MainMenu extends Scene {
     setScore(score: number) {
         this.score = score;
         this.scoreText.setText(this.score + "");
+    }
+
+    increaseScoreWithAnimation(scoreDelta: number, x: number, y: number) {
+        const scoreIncrementText = this.add
+            .text(x, y, `+${scoreDelta}`, {
+                fontFamily: "Arial Black",
+                fontSize: scoreDelta > 10 ? 200 : Math.max(48, scoreDelta * 20),
+                color: "#ee548e",
+                stroke: "#ffffff",
+                strokeThickness: 5,
+                align: "center",
+            })
+            .setDepth(101);
+
+        this.tweens.add({
+            targets: scoreIncrementText,
+            x: 40,
+            y: 20,
+            alpha: 0,
+            duration: 1000,
+            ease: "Power2",
+            onComplete: () => {
+                scoreIncrementText.destroy();
+                this.setScore(this.score + scoreDelta);
+            },
+        });
     }
 }
