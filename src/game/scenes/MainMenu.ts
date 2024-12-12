@@ -373,6 +373,7 @@ export class MainMenu extends Scene {
         );
         if (this.fusionTimestamps.length >= CONTINUOUS_THRESHOLD) {
             this.sound.play("critical");
+            this.criticalTextAnimation(x, y);
             this.fusionTimestamps = [];
         }
         // 合出最大时的提示
@@ -518,6 +519,28 @@ export class MainMenu extends Scene {
             onComplete: () => {
                 scoreIncrementText.destroy();
                 this.setScore(this.score + scoreDelta);
+            },
+        });
+    }
+
+    /**
+     * 会心一击
+     */
+    criticalTextAnimation(x: number, y: number) {
+        const criticalText = this.add
+            .image(x, y, "critical-text")
+            .setDepth(101)
+            .setScale(0.5)
+            .setAlpha(0);
+        this.tweens.add({
+            targets: criticalText,
+            scale: 1,
+            alpha: 1,
+            duration: 1000,
+            ease: "Power2",
+            yoyo: true,
+            onComplete: () => {
+                criticalText.destroy();
             },
         });
     }

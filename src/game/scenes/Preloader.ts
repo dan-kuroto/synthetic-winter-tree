@@ -39,6 +39,7 @@ export class Preloader extends Scene {
             this.load.image(`ball-${i}`, `ball-${i}.png`);
         }
         this.load.image("warning-line", "warning-line.png");
+        this.load.image("critical-text", "critical-text.png");
         this.load.audio("biu", "biu.mp3");
         this.load.audio("critical", "critical.mp3");
         this.load.audio("game-over", "game-over.mp3");
