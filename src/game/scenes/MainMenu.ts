@@ -130,12 +130,10 @@ export class MainMenu extends Scene {
             // 如果小球超出警戒线阈值，显示警戒线
             if (ballTop < WARNING_LINE_Y + WARNING_LINE_THRESHOLD) {
                 showWarning = true;
-                // BUG 这里的判断不对！有可能一个超出警戒线阈值但没超出警戒线的小球出现，导致提前结束检测，然后就没发现超出警戒线的小球了！
                 // 如果小球甚至超出警戒线，准备游戏结束
                 if (ballTop < WARNING_LINE_Y) {
                     aboutToGameOver = true;
                 }
-                break;
             }
         }
         // 不是游戏结束准备状态，重置标记
