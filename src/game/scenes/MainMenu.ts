@@ -198,12 +198,19 @@ export class MainMenu extends Scene {
         this.isGameOver = true;
         // 播放游戏结束音效
         this.sound.play("game-over");
-        // 显示游戏结束文字提示
-        this.tweens.add({
-            targets: this.gameOverText,
-            alpha: 1,
-            duration: 700,
-        });
+        // 显示游戏结束文字提示(延迟2秒，以匹配音效)
+        this.time.delayedCall(
+            2000,
+            () => {
+                this.tweens.add({
+                    targets: this.gameOverText,
+                    alpha: 1,
+                    duration: 700,
+                });
+            },
+            [],
+            this
+        );
         // 添加屏幕变暗效果
         this.tweens.add({
             targets: this.darkOverlay,
