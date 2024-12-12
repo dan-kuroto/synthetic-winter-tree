@@ -18,7 +18,7 @@ const phasermsg = () => {
 }
 
 export default defineConfig({
-    base: '/synthetic-winter-tree',
+    base: './',
     plugins: [
         react(),
         phasermsg()
