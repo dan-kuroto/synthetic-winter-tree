@@ -421,6 +421,7 @@ export class MainMenu extends Scene {
         this.currentBall.setSensor(false);
         this.currentBall.setStatic(false);
         this.currentBall.setData("suspend", false);
+        this.currentBall.setDepth(0);
         this.currentBall = null;
     }
 
@@ -454,6 +455,7 @@ export class MainMenu extends Scene {
             ball.setSensor(true);
             ball.setStatic(true);
             ball.setData("suspend", true);
+            ball.setDepth(1);
         } else {
             // 融合小球认为已经碰撞过了(否则融合后初次碰撞会再次触发创建新小球)
             ball.setData("hasCollided", true);
