@@ -27,7 +27,3 @@
 ### 部署
 
 通过 `Github Actions` 自动部署到 `Github Pages`。
-
-## LICENSE
-
-TODO ...
