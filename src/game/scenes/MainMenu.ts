@@ -232,6 +232,10 @@ export class MainMenu extends Scene {
             this.time.delayedCall(
                 (count % 10) * 100,
                 () => {
+                    // 有可能在延迟过程中小球已经被销毁了(正好碰上融合)
+                    if (ball.getData("aboutToDestroy") || !ball.body) {
+                        return;
+                    }
                     this.increaseScoreWithAnimation(scoreDelta, ball.x, ball.y);
                 },
                 [],
