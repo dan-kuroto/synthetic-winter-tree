@@ -218,11 +218,30 @@ export class MainMenu extends Scene {
             duration: 700,
             ease: "Power2",
         });
-        // 锁死所有小球
+        let count = 0;
         for (const ball of this.balls.getChildren() as Physics.Matter.Image[]) {
+            count++;
+            // 锁死所有小球
             ball.setSensor(true);
             ball.setStatic(true);
+            // 每个小球计分
+            const label = ball.body.label as string;
+            const level = parseInt(label.split("-")[1], 10) as BallLevel;
+            const scoreDelta = MainMenu.levelToScore(level);
+            // 每个小球延迟一定时间后计分和播放动画
+            this.time.delayedCall(
+                (count % 10) * 100,
+                () => {
+                    this.increaseScoreWithAnimation(scoreDelta, ball.x, ball.y);
+                },
+                [],
+                this
+            );
         }
+    }
+
+    static levelToScore(level: BallLevel) {
+        return level + (level === 11 ? 100 : 0);
     }
 
     handleCollision(event, bodyA, bodyB) {
@@ -335,7 +354,7 @@ export class MainMenu extends Scene {
         const x = (ballA.x + ballB.x) / 2;
         const y = (ballA.y + ballB.y) / 2;
         // 算分
-        const scoreDelta = levelA + (newLevel === 11 ? 100 : 0);
+        const scoreDelta = MainMenu.levelToScore(newLevel);
         this.increaseScoreWithAnimation(scoreDelta, x, y);
         // 融合逻辑
         const [volumeX, volumeY] = this.calcNewBallVolume(ballA, ballB);
