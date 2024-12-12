@@ -246,6 +246,9 @@ export class MainMenu extends Scene {
      * 处理小球初次碰撞
      */
     onBallFirstCollided(body) {
+        if (this.isGameOver) {
+            return;
+        }
         const label = body.label as string;
         // 只处理小球
         if (!label.startsWith("ball-")) {
@@ -273,6 +276,9 @@ export class MainMenu extends Scene {
      * 处理小球融合
      */
     handleFusion(bodyA, bodyB) {
+        if (this.isGameOver) {
+            return;
+        }
         const labelA = bodyA.label as string;
         const labelB = bodyB.label as string;
         // 只有小球之间的碰撞才处理
