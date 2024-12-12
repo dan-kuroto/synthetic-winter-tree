@@ -196,20 +196,25 @@ export class MainMenu extends Scene {
 
     gameOver() {
         this.isGameOver = true;
+        // 播放游戏结束音效
         this.sound.play("game-over");
+        // 显示游戏结束文字提示
         this.tweens.add({
             targets: this.gameOverText,
             alpha: 1,
             duration: 700,
         });
         // 添加屏幕变暗效果
-        if (this.darkOverlay) {
-            this.tweens.add({
-                targets: this.darkOverlay,
-                alpha: 0.5,
-                duration: 700,
-                ease: "Power2",
-            });
+        this.tweens.add({
+            targets: this.darkOverlay,
+            alpha: 0.5,
+            duration: 700,
+            ease: "Power2",
+        });
+        // 锁死所有小球
+        for (const ball of this.balls.getChildren() as Physics.Matter.Image[]) {
+            ball.setSensor(true);
+            ball.setStatic(true);
         }
     }
 
