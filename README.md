@@ -27,3 +27,9 @@
 ### 部署
 
 通过 `Github Actions` 自动部署到 `Github Pages`。
+
+## LICENSE
+
+代码部分使用 [MIT](LICENSE) 协议。
+
+游戏素材目录（`public/assets`）下，除 `ball-1.png`、`critical-text.png`、`ground.png`、`warning-line.png` 外，其余图片文件取自《冬日树下的回忆》游戏截图，音频文件取自《假面骑士Ex-Aid》，版权归原作者所有，仅供学习交流使用，禁止用于商业用途。
