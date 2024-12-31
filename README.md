@@ -13,6 +13,16 @@
 > 2. 《合成大西瓜》是一个有趣而不太复杂的小游戏，很适合作为练手项目，锻炼自己的编程能力。
 > 3. ~~写代码使我快乐~~
 
+## 在线试玩
+
+- [官方链接](https://dan-kuroto.github.io/synthetic-winter-tree/)
+  - 通过 `Github Actions` + `Github Pages` 部署，**始终为最新版本**
+  - 由于 Github 服务器在国外，**访问速度较慢**（运气不好甚至可能打不开）
+- [镜像链接](http://game.relievedmx.top/synthetic-winter-tree/)
+  - 无法访问 Github 的情况下可以尝试访问这个链接
+  - 第三方部署，更新可能延迟
+  - **感谢 [夏梦summer_@bilibili](https://space.bilibili.com/3461569778288963) 部署的镜像**
+
 ## 技术栈
 
 ### 开发
@@ -23,10 +33,6 @@
 - [React 18.2.0](https://github.com/facebook/react)
 - [Vite 5.3.1](https://github.com/vitejs/vite)
 - [TypeScript 5.2.2](https://github.com/microsoft/TypeScript)
-
-### 部署
-
-通过 `Github Actions` 自动部署到 `Github Pages`。
 
 ## LICENSE
 
