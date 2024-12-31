@@ -91,7 +91,12 @@ export class MainMenu extends Scene {
     update(time: number, delta: number): void {
         const pointer = this.input.activePointer;
         // 拖动小球
-        if (!this.isGameOver && pointer.isDown && this.currentBall) {
+        if (
+            !this.isGameOver &&
+            pointer.isDown &&
+            this.currentBall &&
+            (pointer.event.target === this.game.canvas)
+        ) {
             this.isDragging = true;
             let x = pointer.x;
             x = Math.min(x, GAME_W - this.currentBall.width / 2);

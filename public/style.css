@@ -15,6 +15,43 @@ body {
     align-items: center;
 }
 
+#full-screen-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.btn {
+    padding: 10px;
+    background-color: #000000;
+    color: rgba(255, 255, 255, 0.87);
+    border: 1px solid rgba(255, 255, 255, 0.87);
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.msg-container {
+    position: absolute;
+    max-width: 75%;
+    padding: 0.75rem;
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 5px;
+}
+
+.msg-container > header {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.msg-container > main {
+    font-size: 1rem;
+}
+
+.msg-container > footer {
+    text-align: center;
+}
+
 #game-container {
     max-width: 100%;
     max-height: 100%;
