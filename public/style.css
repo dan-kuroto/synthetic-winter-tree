@@ -15,12 +15,6 @@ body {
     align-items: center;
 }
 
-#full-screen-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-}
-
 .btn {
     padding: 10px;
     background-color: #000000;
@@ -30,25 +24,36 @@ body {
     cursor: pointer;
 }
 
-.msg-container {
+.modal {
     position: absolute;
     max-width: 75%;
+    min-width: 10rem;
     padding: 0.75rem;
     background-color: rgba(0, 0, 0, 0.8);
     border-radius: 5px;
+    pointer-events: none;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    opacity: 0;
+    transform: translateY(-20px);
 }
 
-.msg-container > header {
+.modal.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.modal > header {
     font-size: 1.5rem;
     font-weight: bold;
     text-align: center;
 }
 
-.msg-container > main {
+.modal > main {
     font-size: 1rem;
 }
 
-.msg-container > footer {
+.modal > footer {
     text-align: center;
 }
 

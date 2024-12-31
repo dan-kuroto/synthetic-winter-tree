@@ -4,17 +4,21 @@ import { IRefPhaserGame, PhaserGame } from "./game/PhaserGame";
 function App() {
     //  References to the PhaserGame component (game and scene are exposed)
     const phaserRef = useRef<IRefPhaserGame | null>(null);
-    const [fullScreen, setFullScreen] = useState(false);
-    const [msgVisible, setMsgVisible] = useState(false);
+    const [msgModalVisible, setMsgModalVisible] = useState(false);
+    const [moreModalVisible, setMoreModalVisible] = useState(false);
 
-    const toggleFullScreen = async () => {
-        if (fullScreen) {
-            await document.exitFullscreen();
-        } else {
-            const elem = document.documentElement;
-            await elem.requestFullscreen();
-        }
-        setFullScreen(!fullScreen);
+    const turnOnFullScreen = async () => {
+        setMoreModalVisible(false);
+        await document.documentElement.requestFullscreen();
+    };
+    const turnOffFullScreen = async () => {
+        setMoreModalVisible(false);
+        await document.exitFullscreen();
+    };
+    const openGithub = () => {
+        setMoreModalVisible(false);
+        const url = "https://github.com/dan-kuroto/synthetic-winter-tree";
+        window.open(url, "_blank");
     };
     const getIsVisited = () => {
         const data = localStorage.getItem("synthetic-winter-tree");
@@ -35,7 +39,7 @@ function App() {
             !getIsVisited() &&
             /Mobi|Android|iPhone/i.test(navigator.userAgent)
         ) {
-            setMsgVisible(true);
+            setMsgModalVisible(true);
         }
 
         localStorage.setItem(
@@ -49,38 +53,69 @@ function App() {
     return (
         <div id="app">
             <button
-                id="full-screen-btn"
                 className="btn"
-                onClick={toggleFullScreen}
+                style={{ position: "absolute", right: 10, top: 10 }}
+                onClick={() => setMoreModalVisible((pre) => !pre)}
             >
-                {fullScreen ? "返回" : "全屏"}
+                更多
             </button>
-            <MsgContainer
-                visible={msgVisible}
-                onHide={() => setMsgVisible(false)}
+            <Modal
+                visible={moreModalVisible}
+                title="更多"
+                content={
+                    <div
+                        style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            marginTop: 10,
+                            gap: 10,
+                        }}
+                    >
+                        <button className="btn" onClick={turnOnFullScreen}>
+                            全屏模式
+                        </button>
+                        <button className="btn" onClick={turnOffFullScreen}>
+                            退出全屏
+                        </button>
+                        <button className="btn" onClick={openGithub}>
+                            Github
+                        </button>
+                    </div>
+                }
+            />
+            <Modal
+                visible={msgModalVisible}
+                title="提示"
+                content={
+                    <p>
+                        手机端浏览器如果出现画面显示不全，请尝试点击右上角“更多”按钮，进入全屏模式，或许可以解决问题。
+                    </p>
+                }
+                footer={
+                    <button
+                        className="btn"
+                        onClick={() => setMsgModalVisible(false)}
+                    >
+                        知道了
+                    </button>
+                }
             />
             <PhaserGame ref={phaserRef} />
         </div>
     );
 }
 
-function MsgContainer(props: { visible: boolean; onHide: () => void }) {
+function Modal(props: {
+    visible: boolean;
+    title?: string | JSX.Element;
+    content?: string | JSX.Element;
+    footer?: string | JSX.Element;
+}) {
     return (
-        <div
-            className="msg-container"
-            style={{ display: props.visible ? "block" : "none" }}
-        >
-            <header>提示</header>
-            <main>
-                <p>
-                    手机端浏览器如果出现画面显示不全，请尝试点击右上角“全屏”按钮，进入全屏模式，或许可以解决问题。
-                </p>
-            </main>
-            <footer>
-                <button className="btn" onClick={props.onHide}>
-                    知道了
-                </button>
-            </footer>
+        <div className={`modal ${props.visible ? "active" : ""}`}>
+            <header>{props.title}</header>
+            <main>{props.content}</main>
+            <footer>{props.footer}</footer>
         </div>
     );
 }
