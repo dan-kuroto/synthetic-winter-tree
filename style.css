@@ -15,6 +15,48 @@ body {
     align-items: center;
 }
 
+.btn {
+    padding: 10px;
+    background-color: #000000;
+    color: rgba(255, 255, 255, 0.87);
+    border: 1px solid rgba(255, 255, 255, 0.87);
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.modal {
+    position: absolute;
+    max-width: 75%;
+    min-width: 10rem;
+    padding: 0.75rem;
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 5px;
+    pointer-events: none;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    opacity: 0;
+    transform: translateY(-20px);
+}
+
+.modal.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.modal > header {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.modal > main {
+    font-size: 1rem;
+}
+
+.modal > footer {
+    text-align: center;
+}
+
 #game-container {
     max-width: 100%;
     max-height: 100%;
