@@ -15,6 +15,10 @@ body {
     align-items: center;
 }
 
+ul {
+    padding-inline-start: 1em;
+}
+
 .btn {
     padding: 10px;
     background-color: #000000;

@@ -27,7 +27,7 @@ function App() {
         }
         try {
             const obj = JSON.parse(data);
-            return obj.lastTime >= 1735622147612; // 需要更新的时候修改这个时间戳
+            return obj.lastTime >= 1736353581226; // 需要更新的时候修改这个时间戳
         } catch (e) {
             console.error(e);
             return false;
@@ -87,9 +87,17 @@ function App() {
                 visible={msgModalVisible}
                 title="提示"
                 content={
-                    <p>
-                        手机端浏览器如果出现画面显示不全，请尝试点击右上角“更多”按钮，进入全屏模式，或许可以解决问题。
-                    </p>
+                    <>
+                        <p>
+                            手机端浏览器若出现画面显示不全，可尝试以下方式解决：
+                        </p>
+                        <ul style={{ fontSize: "0.95em" }}>
+                            <li>点击右上角“更多”进入全屏模式</li>
+                            <li>
+                                iOS设备：点击浏览器底部分享按钮，选择“添加到主屏幕”后，以全屏打开
+                            </li>
+                        </ul>
+                    </>
                 }
                 footer={
                     <button
