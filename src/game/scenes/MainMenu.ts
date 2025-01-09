@@ -84,6 +84,7 @@ export class MainMenu extends Scene {
             .setAlpha(0)
             .setInteractive()
             .on("pointerdown", () => {
+                this.sound.play("restart");
                 this.scene.restart();
             })
             .on("pointerover", () => {

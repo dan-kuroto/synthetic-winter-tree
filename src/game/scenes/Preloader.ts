@@ -44,6 +44,7 @@ export class Preloader extends Scene {
         this.load.audio("critical", "critical.mp3");
         this.load.audio("game-over", "game-over.mp3");
         this.load.audio("game-clear", "game-clear.mp3");
+        this.load.audio("restart", "restart.mp3");
     }
 
     create() {
