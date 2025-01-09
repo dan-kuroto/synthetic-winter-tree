@@ -20,14 +20,20 @@ function App() {
         const url = "https://github.com/dan-kuroto/synthetic-winter-tree";
         window.open(url, "_blank");
     };
-    const getIsVisited = () => {
+    const getRecentlyVisited = () => {
         const data = localStorage.getItem("synthetic-winter-tree");
         if (!data) {
             return false;
         }
         try {
             const obj = JSON.parse(data);
-            return obj.lastTime >= 1736353581226; // 需要更新的时候修改这个时间戳
+            // 更新的时候修改这个时间戳
+            const lastUpdateTime = 1736397825063;
+            // 更新后访问过、且一天内访问过，认为是最近访问过
+            return (
+                obj.lastTime > lastUpdateTime &&
+                Date.now() - obj.lastTime < 3 * 24 * 60 * 60 * 1000
+            );
         } catch (e) {
             console.error(e);
             return false;
@@ -36,7 +42,7 @@ function App() {
 
     useEffect(() => {
         if (
-            !getIsVisited() &&
+            !getRecentlyVisited() &&
             /Mobi|Android|iPhone/i.test(navigator.userAgent)
         ) {
             setMsgModalVisible(true);
