@@ -77,6 +77,15 @@ function App() {
                         <button className="btn" onClick={turnOffFullScreen}>
                             退出全屏
                         </button>
+                        <button
+                            className="btn"
+                            onClick={() => {
+                                setMoreModalVisible(false);
+                                setMsgModalVisible(true);
+                            }}
+                        >
+                            帮助
+                        </button>
                         <button className="btn" onClick={openGithub}>
                             Github
                         </button>
