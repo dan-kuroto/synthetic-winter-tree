@@ -20,6 +20,7 @@ export class MainMenu extends Scene {
     ground: GameObjects.Image;
     scoreText: GameObjects.Text;
     gameOverText: GameObjects.Text;
+    restartGameButton: GameObjects.Text;
     warningLine: GameObjects.Image;
     balls: GameObjects.Group;
     currentBall: Physics.Matter.Image | null = null;
@@ -27,11 +28,11 @@ export class MainMenu extends Scene {
     gameOverTimer: Phaser.Time.TimerEvent | null = null;
     darkOverlay: GameObjects.Rectangle;
 
-    fusionTimestamps: number[] = [];
-    isDragging = false;
-    score = 0;
-    aboutToGameOver = false;
-    isGameOver = false;
+    fusionTimestamps: number[];
+    isDragging: boolean;
+    score: number;
+    aboutToGameOver: boolean;
+    isGameOver: boolean;
 
     constructor() {
         super("MainMenu");
@@ -69,6 +70,29 @@ export class MainMenu extends Scene {
             .setDepth(100)
             .setAlpha(0);
 
+        this.restartGameButton = this.add
+            .text(GAME_W / 2, GAME_H / 2 + 200, "- Restart -", {
+                fontFamily: "Arial Black",
+                fontSize: 80,
+                color: "#000000",
+                stroke: "#ffffff",
+                strokeThickness: 5,
+                align: "center",
+            })
+            .setOrigin(0.5)
+            .setDepth(100)
+            .setAlpha(0)
+            .setInteractive()
+            .on("pointerdown", () => {
+                this.scene.restart();
+            })
+            .on("pointerover", () => {
+                this.restartGameButton.setColor("#ee548e");
+            })
+            .on("pointerout", () => {
+                this.restartGameButton.setColor("#000000");
+            });
+
         this.warningLine = this.add
             .image(GAME_W / 2, WARNING_LINE_Y, "warning-line")
             .setDepth(100)
@@ -85,6 +109,12 @@ export class MainMenu extends Scene {
             .setOrigin(0)
             .setDepth(99);
 
+        this.fusionTimestamps = [];
+        this.isDragging = false;
+        this.score = 0;
+        this.aboutToGameOver = false;
+        this.isGameOver = false;
+
         EventBus.emit("current-scene-ready", this);
     }
 
@@ -95,7 +125,7 @@ export class MainMenu extends Scene {
             !this.isGameOver &&
             pointer.isDown &&
             this.currentBall &&
-            (pointer.event.target === this.game.canvas)
+            pointer.event.target === this.game.canvas
         ) {
             this.isDragging = true;
             let x = pointer.x;
@@ -208,7 +238,7 @@ export class MainMenu extends Scene {
             2000,
             () => {
                 this.tweens.add({
-                    targets: this.gameOverText,
+                    targets: [this.gameOverText, this.restartGameButton],
                     alpha: 1,
                     duration: 700,
                 });
