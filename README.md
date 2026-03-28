@@ -18,7 +18,7 @@
 - [官方链接](https://dan-kuroto.github.io/synthetic-winter-tree/)
   - 通过 `Github Actions` + `Github Pages` 部署，**始终为最新版本**
   - 由于 Github 服务器在国外，**访问速度较慢**（运气不好甚至可能打不开）
-- [镜像链接](http://game.relievedmx.top/synthetic-winter-tree/)
+- [镜像链接](https://game.sunmx.top/synthetic-winter-tree/)
   - 无法访问 Github 的情况下可以尝试访问这个链接
   - 第三方部署，更新可能延迟
   - **感谢 [夏梦summer_@bilibili](https://space.bilibili.com/3461569778288963) 部署的镜像**
